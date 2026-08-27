@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Фанфик-мир</title>
+    <!-- Шрифты и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ===== CSS Переменные ===== */
+        :root {
+            --bg-primary: #0b0a1a;
+            --bg-secondary: #16142b;
+            --bg-card: rgba(30, 27, 58, 0.8);
+            --text-primary: #f0eefb;
+            --text-secondary: #b8b0d9;
+            --accent-1: #7c6df0;
+            --accent-2: #b47aff;
+            --accent-glow: rgba(124, 109, 240, 0.3);
+            --border-glow: rgba(124, 109, 240, 0.6);
+            --radius: 18px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Сброс и база ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: radial-gradient(ellipse at top left, #1e1a3a 0%, #0b0a1a 70%);
+            background-attachment: fixed;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
+
+        /* ===== Хедер ===== */
+        header {
+            background: rgba(11, 10, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(124, 109, 240, 0.2);
+            padding: 18px 5%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo i {
+            -webkit-text-fill-color: initial;
+            color: var(--accent-1);
+        }
+
+        .search-box {
+            flex: 1 1 260px;
+            position: relative;
+            min-width: 180px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 48px;
+            border-radius: 40px;
+            border: 1px solid rgba(124, 109, 240, 0.3);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+        .search-box input:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .tags-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            margin-top: 6px;
+        }
+        .tags-panel .tag-btn {
+            background: rgba(124, 109, 240, 0.12);
+            border: 1px solid rgba(124, 109, 240, 0.25);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+        }
+        .tags-panel .tag-btn:hover {
+            background: rgba(124, 109, 240, 0.25);
+            border-color: var(--accent-1);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+        .tags-panel .tag-btn.active {
+            background: var(--accent-1);
+            border-color: var(--accent-1);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .tags-panel .clear-filter {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 6px 12px;
+            transition: var(--transition);
+        }
+        .tags-panel .clear-filter:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        /* ===== Основной контейнер ===== */
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 30px 5% 60px;
+        }
+
+        /* ===== Список карточек ===== */
+        .fanfic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+            animation: fadeUp 0.6s ease;
+        }
+
+        .fanfic-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid rgba(124, 109, 240, 0.15);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        .fanfic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, rgba(124, 109, 240, 0.05), transparent 60%);
+            pointer-events: none;
+        }
+        .fanfic-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--accent-1);
+            box-shadow: 0 16px 50px rgba(124, 109, 240, 0.25);
+        }
+
+        .fanfic-card .fandom-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-2);
+            background: rgba(124, 109, 240, 0.15);
+            padding: 2px 12px;
+            border-radius: 20px;
+            align-self: flex-start;
+            margin-bottom: 10px;
+            border: 1px solid rgba(124, 109, 240, 0.2);
+        }
+
+        .fanfic-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .fanfic-card .author {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        .fanfic-card .author i {
+            margin-right: 6px;
+            color: var(--accent-1);
+        }
+
+        .fanfic-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 12px 0 16px;
+        }
+        .fanfic-card .tags span {
+            background: rgba(124, 109, 240, 0.1);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid rgba(124, 109, 240, 0.1);
+            letter-spacing: 0.3px;
+        }
+
+        .fanfic-card .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .fanfic-card .read-more {
+            margin-top: 16px;
+            color: var(--accent-1);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+        .fanfic-card:hover .read-more {
+            gap: 12px;
+            color: var(--accent-2);
+        }
+
+        /* ===== Детальный вид ===== */
+        .detail-view {
+            animation: fadeUp 0.5s ease;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .detail-view .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 109, 240, 0.15);
+            border: 1px solid rgba(124, 109, 240, 0.25);
+            color: var(--text-secondary);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 30px;
+        }
+        .detail-view .back-btn:hover {
+            background: rgba(124, 109, 240, 0.3);
+            color: #fff;
+            border-color: var(--accent-1);
+            transform: translateX(-4px);
+        }
+
+        .detail-view .detail-header {
+            margin-bottom: 28px;
+        }
+        .detail-view .detail-header h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .detail-view .detail-header .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 12px 0 8px;
+            color: var(--text-secondary);
+        }
+        .detail-view .detail-header .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .detail-view .detail-header .meta i {
+            color: var(--accent-1);
+        }
+        .detail-view .detail-header .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .detail-view .detail-header .detail-tags span {
+            background: rgba(124, 109, 240, 0.12);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid rgba(124, 109, 240, 0.15);
+        }
+
+        .detail-view .detail-content {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius);
+            padding: 32px;
+            border: 1px solid rgba(124, 109, 240, 0.1);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #ddd8f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        }
+        .detail-view .detail-content p {
+            margin-bottom: 1.2em;
+        }
+
+        /* ===== Анимации ===== */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== Сообщение "ничего не найдено" ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+        .empty-state h3 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        /* ===== Футер ===== */
+        footer {
+            text-align: center;
+            padding: 30px 5%;
+            border-top: 1px solid rgba(124, 109, 240, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+        footer a {
+            color: var(--accent-1);
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Адаптив ===== */
+        @media (max-width: 700px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 14px 5%;
+            }
+            .logo {
+                font-size: 1.5rem;
+                justify-content: center;
+            }
+            .search-box {
+                flex: 1 1 100%;
+            }
+            .tags-panel {
+                justify-content: center;
+            }
+            .fanfic-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-view .detail-header h1 {
+                font-size: 2rem;
+            }
+            .detail-view .detail-content {
+                padding: 20px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Хедер ===== -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open"></i> Фанфик-мир
+        </div>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Искать по названию или автору..." />
+        </div>
+        <div class="tags-panel" id="tagsPanel">
+            <!-- Теги будут вставлены JS -->
+        </div>
+    </header>
+
+    <!-- ===== Основной контент ===== -->
+    <main id="app">
+        <!-- Список карточек / детальный вид -->
+    </main>
+
+    <!-- ===== Футер ===== -->
+    <footer>
+        <p>📖 Все фанфики собраны в образовательных целях. <br />Сделано с ❤️ для истинных ценителей.</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  ДАННЫЕ: массив фанфиков
+        // ============================================================
+        const fanfics = [{
+            id: 1,
+            title: "Обещание на крыше",
+            fandom: "Оно",
+            ship: "Рэдди (Ричи / Эдди)",
+            author: "SilverQuill",
+            tags: ["флафф", "романтика", "AU"],
+            description: "Ричи и Эдди встречаются спустя годы после событий в Дерри. Смогут ли они наконец сказать друг другу то, что всегда молчали?",
+            content: `Эдди всегда ненавидел высоту. Но именно на крыше старого дома в Дерри он чувствовал себя в безопасности — потому что рядом был Ричи. Они не виделись почти десять лет, и вот снова стоят здесь, глядя на город, который когда-то был для них клеткой.
+
+— Ты не изменился, — сказал Эдди, пряча руки в карманы куртки. — Всё такой же дурак.
+— А ты всё такой же зануда, — усмехнулся Ричи, но в голосе не было язвительности. — Но я скучал по этому занудству.
+
+Они замолчали. Ветер трепал волосы, и где-то внизу сигналила машина. Эдди чувствовал, как сердце колотится быстрее обычного. Он всегда знал, что между ними есть что-то большее, чем дружба, но боялся признаться даже себе.
+
+— Я хотел тебе кое-что сказать, — начал Ричи, глядя вдаль. — Тогда, в подземельях, я чуть не потерял тебя. И понял, что не хочу больше терять.
+Эдди затаил дыхание.
+— Я люблю тебя, Эд. Не как друга. Совсем по-другому.
+
+Слова повисли в воздухе, и вдруг всё стало простым. Эдди шагнул ближе, взял Ричи за руку и прошептал:
+— Я тоже. Идиот.
+
+Они рассмеялись, и этот смех разогнал все тени прошлого. На крыше, где когда-то они прятались от клоуна, они нашли друг друга.
+
+Прошли годы. Они переехали в небольшой городок у моря, купили дом с садом и завели собаку. По утрам Ричи готовил кофе, а Эдди ворчал, что он слишком сладкий. Но каждый вечер они выходили на крыльцо, смотрели на закат и знали, что это и есть их настоящее счастье.
+
+Однажды Эдди сказал:
+— Знаешь, я всё ещё боюсь высоты.
+— Но ты же стоишь здесь, — удивился Ричи.
+— Потому что ты рядом, — ответил Эдди. — С тобой я готов взлететь хоть до небес.
+
+И Ричи поцеловал его, чувствуя, как мир вокруг становится цветным, как в старых фильмах, которые они любили смотреть по ночам. Их история не была идеальной, но она была их собственной. И это было важнее всего.`
+        }, {
+            id: 2,
+            title: "Глубины",
+            fandom: "The Boys",
+            ship: "Диплендер (Глубинный / Лендер)",
+            author: "NightShade",
+            tags: ["гей шип", "драма", "ангст"],
+            description: "Глубинный находит утешение в объятиях того, кто, казалось бы, должен быть его врагом. Но у каждого есть свои секреты.",
+            content: `Вода всегда была его убежищем. Но теперь даже океан казался слишком тесным. Глубинный сидел на краю пирса, глядя на волны, и думал о том, как легко всё рухнуло. Его карьера, репутация, друзья — всё исчезло. Остался только этот холодный ветер и пустота внутри.
+
+— Не ожидал увидеть тебя здесь, — раздался голос за спиной. Глубинный обернулся и увидел Лендера, своего бывшего соперника, который сейчас смотрел на него с непонятным выражением.
+
+— Пришёл добить? — усмехнулся Глубинный. — У меня нет сил даже на это.
+
+Лендер молча сел рядом. Он не был таким уж чудовищем, каким его рисовали СМИ. Просто человек, который тоже потерял всё, но притворялся, что ему всё равно.
+
+— Я знаю, что такое падать на дно, — тихо сказал Лендер. — И я знаю, как трудно оттуда выбраться.
+
+Они смотрели на закат, и в этом молчании было больше понимания, чем в любых словах. Глубинный почувствовал, как Лендер взял его за руку. Это было странно, неправильно, но в то же время единственно верно.
+
+— Я никому не говорил, — прошептал Глубинный, — но я всегда завидовал твоей силе. Твоей уверенности.
+— Это всего лишь маска, — ответил Лендер. — Под ней такой же страх, как и у тебя.
+
+Ночь окутала их, и они остались вдвоём на пирсе, доверяя друг другу то, что не могли доверить никому. Их связь была обречена на осуждение, но в этом мраке они нашли свет.
+
+Прошло несколько месяцев. Они встречались тайно, боясь разоблачения. Но однажды Лендер сказал:
+— Я не хочу больше прятаться.
+Глубинный вздрогнул:
+— Но что скажут люди? Что скажут наши враги?
+— Мне плевать, — твёрдо ответил Лендер. — Я хочу быть с тобой, чего бы это ни стоило.
+
+И они вышли из тени, взявшись за руки. Это был вызов всему миру, но они были готовы к нему. Ведь на дне океана они нашли друг друга.`
+        }, {
+            id: 3,
+            title: "Свет в темноте",
+            fandom: "Очень странные дела",
+            ship: "Байлер (Майк / Уилл)",
+            author: "StarDust",
+            tags: ["флафф", "дружба", "сверхъестественное"],
+            description: "После всех битв Майк и Уилл наконец могут быть собой. Но прошлое не отпускает, и только вместе они могут победить тьму.",
+            content: `Уилл всегда чувствовал себя чужим. Даже когда всё закончилось, даже когда Демогоргон был повержен, внутри оставалась пустота, которую никто не мог заполнить. Кроме Майка.
+
+Они сидели в подвале Уилеров, как в старые времена, но теперь между ними повисло напряжение. Майк смотрел на карту, но мысли его были далеко.
+
+— Уилл, — сказал он внезапно, — я должен тебе кое-что сказать.
+— Что? — Уилл поднял глаза, и в них отразилась тревога.
+
+Майк глубоко вздохнул:
+— Я думал, что Эль — моя судьба. Но я ошибался. Ты всегда был рядом. Ты прошёл через ад, но остался собой. И я понял, что люблю тебя. Не как друга.
+
+Уилл замер. Он никогда не позволял себе даже думать об этом. Но слова Майка разорвали все барьеры.
+
+— Я тоже, — прошептал Уилл. — Я боялся признаться.
+— Почему?
+— Потому что я боялся потерять тебя.
+
+Они обнялись, и в этом объятии исчезла вся боль и страх. Мир за окном продолжал вращаться, но для них наступила вечная весна.
+
+Они стали жить вместе, строя планы на будущее. Майк помогал Уиллу справляться с приступами, когда тень из Изнанки возвращалась. И каждый раз Уилл говорил:
+— Пока ты рядом, я справлюсь.
+
+Они путешествовали по стране, останавливаясь в маленьких городках, и везде находили что-то красивое. Однажды ночью, глядя на звёзды, Уилл сказал:
+— Знаешь, я никогда не думал, что буду так счастлив.
+— Это только начало, — ответил Майк, целуя его в висок.
+
+Их история была похожа на свет в темноте — яркий, тёплый, настоящий. И они знали, что этот свет будет гореть вечно.`
+        }, {
+            id: 4,
+            title: "Новый мир",
+            fandom: "Оно",
+            ship: "Рэдди (Ричи / Эдди)",
+            author: "PhoenixWrite",
+            tags: ["AU", "романтика", "флафф"],
+            description: "Альтернативная вселенная, где Ричи и Эдди — соседи по общежитию. Их знакомство перерастает в нечто большее.",
+            content: `Общежитие колледжа было шумным и хаотичным, но для Ричи это был идеальный мир. Он любил знакомиться с новыми людьми, шутить и ни о чём не думать. Пока в его комнату не въехал сосед по имени Эдди.
+
+Эдди был полной противоположностью Ричи: аккуратный, вечно переживающий, с огромным количеством лекарств в тумбочке. Ричи сразу понял, что этот парень — его личный вызов.
+
+— Привет, сосед! Я Ричи, — объявил он, войдя в комнату с огромной улыбкой.
+— Эдди, — буркнул тот, даже не подняв головы от книги.
+
+Так началось их соседство. Сначала Эдди раздражал Ричи своей стерильностью, а Ричи бесил Эдди своим беспорядком. Но однажды ночью, когда Эдди не мог уснуть из-за панической атаки, Ричи сел рядом и начал рассказывать глупые истории, пока тот не успокоился.
+
+— Спасибо, — прошептал Эдди, когда дыхание выровнялось.
+— Всегда пожалуйста, — ответил Ричи, и в его голосе впервые не было шутки.
+
+С этого момента они стали неразлучны. Ричи помогал Эдди бороться с тревогой, а Эдди учил Ричи ответственности. И постепенно, между ними возникло то, чего они оба не ожидали.
+
+Однажды вечером, стоя на крыше общежития, Ричи признался:
+— Я никогда не был серьёзен ни с кем. Но с тобой я хочу быть серьёзным.
+Эдди улыбнулся:
+— Я тоже.
+
+Они поцеловались, и в этот момент весь мир стал для них новым, полным надежды и обещаний. Они знали, что их ждёт много трудностей, но теперь они были вместе. И это было самое главное.`
+        }, {
+            id: 5,
+            title: "Правила игры",
+            fandom: "The Boys",
+            ship: "Диплендер (Глубинный / Лендер)",
+            author: "ShadowRealm",
+            tags: ["гей шип", "ангст", "драма"],
+            description: "В мире супергероев любовь — это слабость. Но Глубинный и Лендер готовы нарушить все правила.",
+            content: `В мире, где каждый шаг контролируется корпорациями, любовь становится роскошью, которую никто не может себе позволить. Глубинный знал это лучше всех. Он играл роль, носил маску, улыбался камерам. Но внутри умирал.
+
+Лендер был другим. Он был холоден, расчётлив, но под этой бронёй скрывалась рана, которую никто не видел. Они встретились на закрытой вечеринке для Vought, и случайный разговор перерос в запретную связь.
+
+— Это самоубийство, — сказал Глубинный, когда они остались наедине.
+— Я знаю, — ответил Лендер. — Но я устал притворяться.
+
+Их встречи стали тайным ритуалом. Они встречались в заброшенных зданиях, в тени небоскрёбов, где никто не мог их увидеть. Но однажды кто-то узнал правду.
+
+Их шантажировали, угрожали раскрыть всё. Лендер решил уйти из Vought, чтобы спасти Глубинного.
+— Я не позволю им разрушить тебя, — сказал он.
+— Но как же мы? — спросил Глубинный.
+— Мы найдём способ. Мы всегда находим.
+
+Они сбежали из города, оставив всё позади. Поселились в небольшом домике у океана, где никто их не искал. И там, вдали от грязных игр, они поняли, что настоящая сила не в суперспособностях, а в любви, которая не боится правил.
+
+Прошло время. Они открыли кафе на побережье, где подавали кофе и слушали истории прохожих. Иногда их узнавали, но они лишь улыбались. Потому что теперь они были свободны. И это была их победа.`
+        }, {
+            id: 6,
+            title: "Тайная комната",
+            fandom: "Очень странные дела",
+            ship: "Байлер (Майк / Уилл)",
+            author: "EerieLight",
+            tags: ["сверхъестественное", "флафф", "дружба"],
+            description: "В подвале дома Майка обнаруживается комната, которая переносит их в моменты прошлого. Смогут ли они изменить то, что было?",
+            content: `Это началось с обычного ремонта. Майк решил разобрать старый шкаф в подвале и наткнулся на дверь, которой раньше не было. Он позвал Уилла, и вместе они открыли её.
+
+Внутри была комната, заполненная светящимися шарами. Каждый шар показывал момент из их прошлого: первый раз, когда они встретились, битву с Демогоргоном, их первый поцелуй у костра.
+
+— Это странно, — прошептал Уилл. — Но это прекрасно.
+
+Они дотронулись до одного шара и вдруг оказались в том дне, когда Уилл исчез в Изнанке. Они видели себя прежних, видели страх и боль. Майк сжал руку Уилла:
+— Я не хочу это видеть.
+— Подожди, — сказал Уилл. — Может, мы можем изменить что-то?
+
+Но когда они попытались вмешаться, комната замерцала и вернула их обратно. Перед ними стояла записка: «Не пытайтесь изменить прошлое. Оно делает вас теми, кто вы есть».
+
+Они вышли из комнаты, и дверь исчезла. Но они запомнили этот урок. Теперь они ценили каждый момент, зная, что даже боль может быть частью любви.
+
+Они продолжали жить, делясь воспоминаниями и создавая новые. И в каждой улыбке друг друга они находили ту самую тайную комнату, где всегда было тепло и безопасно.`
+        }];
+
+        // ============================================================
+        //  СОСТОЯНИЕ
+        // ============================================================
+        let currentFilterTag = ''; // пустая строка = все
+        let currentSearchQuery = '';
+        let currentView = 'list'; // 'list' или 'detail'
+        let selectedId = null;
+
+        // ============================================================
+        //  DOM-элементы
+        // ============================================================
+        const app = document.getElementById('app');
+        const searchInput = document.getElementById('searchInput');
+        const tagsPanel = document.getElementById('tagsPanel');
+
+        // ============================================================
+        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ============================================================
+        function getUniqueTags(fanfics) {
+            const set = new Set();
+            fanfics.forEach(f => f.tags.forEach(t => set.add(t)));
+            return Array.from(set).sort();
+        }
+
+        function filterFanfics() {
+            return fanfics.filter(f => {
+                const matchTag = currentFilterTag ? f.tags.includes(currentFilterTag) : true;
+                const query = currentSearchQuery.trim().toLowerCase();
+                const matchSearch = query ? f.title.toLowerCase().includes(query) || f.author.toLowerCase().includes(query) : true;
+                return matchTag && matchSearch;
+            });
+        }
+
+        // ============================================================
+        //  РЕНДЕРИНГ
+        // ============================================================
+        function render() {
+            if (currentView === 'detail' && selectedId !== null) {
+                renderDetail(selectedId);
+                return;
+            }
+            renderList();
+        }
+
+        function renderList() {
+            const filtered = filterFanfics();
+            let html = '';
+
+            if (filtered.length === 0) {
+                html = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Ничего не найдено</h3>
+                        <p>Попробуйте изменить фильтр или поиск.</p>
+                    </div>
+                `;
+            } else {
+                html = `<div class="fanfic-grid">`;
+                filtered.forEach(f => {
+                    const tagsHtml = f.tags.map(t => `<span>${t}</span>`).join('');
+                    html += `
+                        <div class="fanfic-card" data-id="${f.id}">
+                            <div class="fandom-tag">${f.fandom}</div>
+                            <h3>${escapeHtml(f.title)}</h3>
+                            <div class="author"><i class="fas fa-user-pen"></i> ${escapeHtml(f.author)}</div>
+                            <div class="tags">${tagsHtml}</div>
+                            <div class="description">${escapeHtml(f.description)}</div>
+                            <div class="read-more">
+                                Читать <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            app.innerHTML = html;
+
+            // Обработчики кликов на карточки
+            document.querySelectorAll('.fanfic-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = parseInt(card.dataset.id);
+                    openDetail(id);
+                });
+            });
+        }
+
+        function renderDetail(id) {
+            const fanfic = fanfics.find(f => f.id === id);
+            if (!fanfic) {
+                currentView = 'list';
+                render();
+                return;
+            }
+
+            // Разбиваем контент на абзацы
+            const paragraphs = fanfic.content.split('\n\n').filter(p => p.trim() !== '');
+            const contentHtml = paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
+            const tagsHtml = fanfic.tags.map(t => `<span>${t}</span>`).join('');
+
+            const html = `
+                <div class="detail-view">
+                    <button class="back-btn" id="backToList">
+                        <i class="fas fa-arrow-left"></i> Назад к списку
+                    </button>
+                    <div class="detail-header">
+                        <h1>${escapeHtml(fanfic.title)}</h1>
+                        <div class="meta">
+                            <span><i class="fas fa-book"></i> ${escapeHtml(fanfic.fandom)}</span>
+                            <span><i class="fas fa-heart"></i> ${escapeHtml(fanfic.ship)}</span>
+                            <span><i class="fas fa-user-pen"></i> ${escapeHtml(fanfic.author)}</span>
+                        </div>
+                        <div class="detail-tags">${tagsHtml}</div>
+                    </div>
+                    <div class="detail-content">
+                        ${contentHtml}
+                    </div>
+                </div>
+            `;
+
+            app.innerHTML = html;
+
+            document.getElementById('backToList').addEventListener('click', () => {
+                currentView = 'list';
+                selectedId = null;
+                render();
+            });
+        }
+
+        // Простейшее экранирование, чтобы избежать XSS (для безопасности)
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================================
+        //  УПРАВЛЕНИЕ ТЕГАМИ (кнопки в хедере)
+        // ============================================================
+        function renderTags() {
+            const allTags = getUniqueTags(fanfics);
+            let html = '';
+            allTags.forEach(tag => {
+                const activeClass = (currentFilterTag === tag) ? 'active' : '';
+                html += `<button class="tag-btn ${activeClass}" data-tag="${tag}">${tag}</button>`;
+            });
+            html += `<button class="clear-filter" id="clearFilter">✕ Сбросить</button>`;
+            tagsPanel.innerHTML = html;
+
+            // Обработчики
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tag = btn.dataset.tag;
+                    if (currentFilterTag === tag) {
+                        currentFilterTag = '';
+                    } else {
+                        currentFilterTag = tag;
+                    }
+                    // Если мы в детальном виде, переключаемся на список
+                    if (currentView === 'detail') {
+                        currentView = 'list';
+                        selectedId = null;
+                    }
+                    render();
+                    renderTags(); // обновить активный класс
+                });
+            });
+
+            document.getElementById('clearFilter').addEventListener('click', () => {
+                currentFilterTag = '';
+                if (currentView === 'detail') {
+                    currentView = 'list';
+                    selectedId = null;
+                }
+                render();
+                renderTags();
+            });
+        }
+
+        // ============================================================
+        //  ПОИСК
+        // ============================================================
+        searchInput.addEventListener('input', (e) => {
+            currentSearchQuery = e.target.value;
+            if (currentView === 'detail') {
+                currentView = 'list';
+                selectedId = null;
+            }
+            render();
+            renderTags(); // обновим активные теги
+        });
+
+        // ============================================================
+        //  ОТКРЫТИЕ ДЕТАЛЬНОГО ВИДА
+        // ============================================================
+        function openDetail(id) {
+            currentView = 'detail';
+            selectedId = id;
+            render();
+        }
+
+        // ============================================================
+        //  ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        renderTags();
+        render();
+
+        // Небольшой трюк: при клике на фон детального вида - не закрывать, только по кнопке.
+        // Всё готово!
+        console.log('📚 Фанфик-мир загружен!');
+    </script>
+</body>
+</html>
